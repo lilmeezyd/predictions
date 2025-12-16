@@ -79,6 +79,10 @@ const editFixture = asyncHandler(async (req, res) => {
     throw new Error("Please add all fields");
   }
 
+  if (teamAway.toString() === teamHome.toString()) {
+    throw new Error("Home team and away team can not be the same!");
+  }
+
   if (!req.user) {
     res.status(400);
     throw new Error("User not found");
@@ -119,7 +123,7 @@ const editScores = asyncHandler(async (req, res) => {
   if (!currentMatchday) {
     throw new Error("This fixture is not in the currently running matchday");
   }
-  if (!teamHomeScore || !teamAwayScore) {
+  if (isNaN(teamHomeScore) || isNaN(teamAwayScore)) {
     throw new Error("Scores are incomplete!");
   }
   await Fixture.findByIdAndUpdate(
@@ -183,6 +187,79 @@ const deleteFixture = asyncHandler(async (req, res) => {
   res.status(200).json({ id: req.params.id });
 });
 
+//@desc Start Fixture
+//@route PATCH /api/fixtures/:id/start
+//@access private
+//@role ADMIN
+const startFixture = asyncHandler(async (req, res) => {
+  const fixture = await Fixture.findById(req.params.id);
+  if (!fixture) {
+    res.status(400);
+    throw new Error("Fixture not found");
+  }
+
+  const { live, finished } = fixture
+  if(live) {
+    throw new Error("Fixture already live")
+  }
+  if(finished) {
+    throw new Error("Fixture already ended")
+  }
+
+  const updatedFixture = await Fixture.findByIdAndUpdate(
+    req.params.id,
+    {$set: {live: true, teamAwayScore: 0, teamHomeScore: 0}},
+    { new: true }
+  );
+  res.json(updatedFixture)
+})
+
+//@desc End Fixture
+//@route PATCH /api/fixtures/:id/end
+//@access private
+//@role ADMIN
+const endFixture = asyncHandler(async (req, res) => {
+  const fixture = await Fixture.findById(req.params.id);
+  if (!fixture) {
+    res.status(400);
+    throw new Error("Fixture not found");
+  }
+
+  const { live, finished } = fixture
+  if(!live) {
+    throw new Error("Fixture is not yet live")
+  }
+  if(finished) {
+    throw new Error("Fixture already ended")
+  }
+
+  const updatedFixture = await Fixture.findByIdAndUpdate(
+    req.params.id,
+    {$set: {finished: true, live:false}},
+    { new: true }
+  );
+  res.json(updatedFixture)
+})
+
+//@desc Start Fixture
+//@route PATCH /api/fixtures/:id/reset
+//@access private
+//@role ADMIN
+const resetFixture = asyncHandler(async (req, res) => {
+  const fixture = await Fixture.findById(req.params.id);
+  if (!fixture) {
+    res.status(400);
+    throw new Error("Fixture not found");
+  }
+
+  const updatedFixture = await Fixture.findByIdAndUpdate(
+    req.params.id,
+    {$set: {live: false, finished: false, teamAwayScore: null, teamHomeScore: null}},
+    { new: true }
+  );
+  res.json(updatedFixture)
+})
+
 export {
   setFixture,
   getFixtures,
@@ -190,4 +267,7 @@ export {
   editFixture,
   editScores,
   deleteFixture,
+  startFixture,
+  endFixture,
+  resetFixture
 };

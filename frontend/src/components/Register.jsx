@@ -26,8 +26,11 @@ const Register = (props) => {
   const { userInfo } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (userInfo) {
+    if (userInfo && userInfo?.roles?.NORMAL_USER) {
       navigate("/predictions");
+    }
+    if (userInfo && userInfo?.roles?.ADMIN) {
+      navigate("/admin");
     }
   }, [navigate, userInfo]);
 

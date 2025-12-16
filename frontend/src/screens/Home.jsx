@@ -12,7 +12,7 @@ const Home = () => {
     setView({ login: false, register: true });
   };
   return (
-    <div className="border border-black h-screen px-8 grid grid-cols-1 md:grid-cols-2">
+    <div className="h-screen px-8 grid grid-cols-1 md:grid-cols-2">
       <div className="grid items-center h-screen">
         {login && <Login registerView={registerView} />}
         {register && <Register loginView={loginView} />}

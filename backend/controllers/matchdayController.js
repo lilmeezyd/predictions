@@ -11,6 +11,10 @@ const createMatchday = asyncHandler(async (req, res) => {
     res.status(400);
     throw new Error("Add matchday!");
   }
+  if (parseInt(matchdayId) < 1) {
+    res.status(400);
+    throw new Error("Matchday has to be greater than 0");
+  }
 
   let id = parseInt(matchdayId);
   const idExists = await Matchday.findOne({ matchdayId: id });
@@ -109,7 +113,7 @@ const setCurrentMatchday = asyncHandler(async (req, res) => {
 //@role Admin, editor
 const updateMatchday = asyncHandler(async (req, res) => {
   const matchday = await Matchday.findById(req.params.id);
-  let { matchdayId } = req.body;
+  let { matchdayId, oldId } = req.body;
   //Find user
   if (!req.user) {
     res.status(400);
@@ -122,6 +126,10 @@ const updateMatchday = asyncHandler(async (req, res) => {
   if (!matchdayId) {
     res.status(400);
     throw new Error("Add matchday!");
+  }
+
+  if(parseInt(oldId) === parseInt(matchdayId)) {
+    throw new Error("The new and old matchday Ids are the same!")
   }
 
   let id = parseInt(matchdayId);
