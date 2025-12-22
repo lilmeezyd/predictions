@@ -11,7 +11,7 @@ const predictionSchema = ({
     teamHomeScore: { type: Number, default: null},
     teamAwayScore: { type: Number, default: null},
     predictionPoints: { type: Number, default: null}
-}, {tiemstamps: true})
+});
 
 const Prediction = mongoose.model("Prediction", predictionSchema)
-export default Prediction;
+export default Prediction; 

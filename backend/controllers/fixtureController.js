@@ -3,7 +3,6 @@ import Fixture from "../models/fixtureModel.js";
 import User from "../models/userModel.js";
 import Matchday from "../models/matchdayModel.js";
 import { updatePlayerPoints } from "../services/updatePlayerPoints.js";
-import { updateWeeklyStandings } from "../services/updateWeeklyStandings.js";
 
 //@desc Set Fixture
 //@route POST /api/fixtures
@@ -119,19 +118,26 @@ const editScores = asyncHandler(async (req, res) => {
   }
 
   let { teamHomeScore, teamAwayScore } = req.body;
-  const currentMatchday = await Matchday.findOne({_id: fixture.matchday, current: true})
+  const currentMatchday = await Matchday.findOne({
+    _id: fixture.matchday,
+    current: true,
+  });
   if (!currentMatchday) {
     throw new Error("This fixture is not in the currently running matchday");
   }
   if (isNaN(teamHomeScore) || isNaN(teamAwayScore)) {
     throw new Error("Scores are incomplete!");
   }
-  await Fixture.findByIdAndUpdate(
+  const updatedFixture = await Fixture.findByIdAndUpdate(
     req.params.id,
     { $set: { teamAwayScore, teamHomeScore } },
     { new: true }
   );
-  await Promise.all([updatePlayerPoints(), updateWeeklyStandings()]);
+  if (updatedFixture) {
+    const { _id: fixtureId, matchday, teamAwayScore, teamHomeScore, teamAway, teamHome } =
+      updatedFixture;
+    await updatePlayerPoints(fixtureId, matchday, teamAwayScore, teamHomeScore, teamAway, teamHome)
+  }
   res.json("scores updated");
 });
 
@@ -198,21 +204,21 @@ const startFixture = asyncHandler(async (req, res) => {
     throw new Error("Fixture not found");
   }
 
-  const { live, finished } = fixture
-  if(live) {
-    throw new Error("Fixture already live")
+  const { live, finished } = fixture;
+  if (live) {
+    throw new Error("Fixture already live");
   }
-  if(finished) {
-    throw new Error("Fixture already ended")
+  if (finished) {
+    throw new Error("Fixture already ended");
   }
 
   const updatedFixture = await Fixture.findByIdAndUpdate(
     req.params.id,
-    {$set: {live: true, teamAwayScore: 0, teamHomeScore: 0}},
+    { $set: { live: true, teamAwayScore: 0, teamHomeScore: 0 } },
     { new: true }
   );
-  res.json(updatedFixture)
-})
+  res.json(updatedFixture);
+});
 
 //@desc End Fixture
 //@route PATCH /api/fixtures/:id/end
@@ -225,21 +231,21 @@ const endFixture = asyncHandler(async (req, res) => {
     throw new Error("Fixture not found");
   }
 
-  const { live, finished } = fixture
-  if(!live) {
-    throw new Error("Fixture is not yet live")
+  const { live, finished } = fixture;
+  if (!live) {
+    throw new Error("Fixture is not yet live");
   }
-  if(finished) {
-    throw new Error("Fixture already ended")
+  if (finished) {
+    throw new Error("Fixture already ended");
   }
 
   const updatedFixture = await Fixture.findByIdAndUpdate(
     req.params.id,
-    {$set: {finished: true, live:false}},
+    { $set: { finished: true, live: false } },
     { new: true }
   );
-  res.json(updatedFixture)
-})
+  res.json(updatedFixture);
+});
 
 //@desc Start Fixture
 //@route PATCH /api/fixtures/:id/reset
@@ -254,11 +260,18 @@ const resetFixture = asyncHandler(async (req, res) => {
 
   const updatedFixture = await Fixture.findByIdAndUpdate(
     req.params.id,
-    {$set: {live: false, finished: false, teamAwayScore: null, teamHomeScore: null}},
+    {
+      $set: {
+        live: false,
+        finished: false,
+        teamAwayScore: null,
+        teamHomeScore: null,
+      },
+    },
     { new: true }
   );
-  res.json(updatedFixture)
-})
+  res.json(updatedFixture);
+});
 
 export {
   setFixture,
@@ -269,5 +282,5 @@ export {
   deleteFixture,
   startFixture,
   endFixture,
-  resetFixture
+  resetFixture,
 };

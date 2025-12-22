@@ -1,11 +1,13 @@
 import { useMemo, useState } from "react";
-import { useGetFixturesQuery } from "../slices/fixtureApiSlice";
+import {
+  useGetFixturesQuery,
+} from "../slices/fixtureApiSlice";
 import { useGetTeamsQuery } from "../slices/teamApiSlice";
 import { useGetMatchdaysQuery } from "../slices/matchdayApiSlice";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
-import PredictionItem from "./PredictionItem";
+import FixtureItem from "./FixtureItem";
 
-const PredictionSection = () => {
+const NormalFixtures = () => {
   const { data = [], isLoading } = useGetFixturesQuery();
   const { data: teams = [] } = useGetTeamsQuery();
   const { data: matchdays = [] } = useGetMatchdaysQuery();
@@ -20,18 +22,22 @@ const PredictionSection = () => {
         if (x.kickOffTime !== y.kickOffTime) {
           return x.kickOffTime > y.kickOffTime ? 1 : -1;
         }
-        return x.teamHome.localeCompare(y.teamHome);
+        return x.teamHome?.localeCompare(y.teamHome);
       }) || [];
 
     return returnedFixtures;
   }, [fixtures, currentPage]);
-  const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
+  const totalPages = Math.ceil(groupedFixtures?.length / itemsPerPage);
+
+console.log(groupedFixtures)
   if (isLoading) {
     return <div>Loading...</div>;
   }
   return (
     <>
-      <div className={`grid grid-cols-[1fr] justify-between items-center`}>
+      <div
+        className={`grid grid-cols-[1fr] justify-between items-center`}
+      >
         <div>
           <div className="w-full overflow-x-auto space-y-4">
             <div>
@@ -39,7 +45,10 @@ const PredictionSection = () => {
                 Matchday&nbsp;{currentPage}
               </h1>
               {groupedFixtures.map((fixture) => (
-                <PredictionItem key={fixture._id} fixture={fixture} />
+                <FixtureItem
+                  key={fixture._id}
+                  fixture={fixture}
+                />
               ))}
             </div>
           </div>
@@ -73,4 +82,4 @@ const PredictionSection = () => {
   );
 };
 
-export default PredictionSection;
+export default NormalFixtures;

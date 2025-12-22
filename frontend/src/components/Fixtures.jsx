@@ -14,6 +14,7 @@ import { useGetMatchdaysQuery } from "../slices/matchdayApiSlice";
 import { Pencil, Trash2, Plus, CircleCheck, CircleX } from "lucide-react";
 import { toast } from "sonner";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
+import FixtureItem from "./FixtureItem";
 
 const Fixtures = () => {
   const { data = [], isLoading } = useGetFixturesQuery();
@@ -67,13 +68,16 @@ const Fixtures = () => {
     const sortable = [...fixtures];
     const filtered = sortable.find((x) => x.matchday === currentPage) || {};
     const returnedFixtures =
-      filtered.fixtures?.sort((x, y) =>
-        x.kickOffTime > y.kickOffTime ? 1 : -1
-      ) || [];
+      filtered.fixtures?.sort((x, y) => {
+        if (x.kickOffTime !== y.kickOffTime) {
+          return x.kickOffTime > y.kickOffTime ? 1 : -1;
+        }
+        return x.teamHome?.localeCompare(y.teamHome);
+      }) || [];
 
     return returnedFixtures;
   }, [fixtures, currentPage]);
-  const totalPages = Math.ceil(groupedFixtures?.length / itemsPerPage);
+  const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
   const openEditModal = (fixture) => {
     setSelectedFixture(fixture);
     setEditFixture(fixture._id);
@@ -219,62 +223,16 @@ const Fixtures = () => {
         <div>
           <div className="w-full overflow-x-auto space-y-4">
             <div>
-              <h1 className="text-center font-bold my-2 py-2 bg-gray-500 rounded-lg text-white">
+              <h1 className="text-center font-bold my-2 py-2 bg-gray-900 rounded-sm text-white">
                 Matchday&nbsp;{currentPage}
               </h1>
               {groupedFixtures.map((fixture) => (
-                <div key={fixture._id}>
-                  <h2 className="text-center font-bold my-2">
-                    {new Date(fixture.kickOffTime).toLocaleString()}
-                  </h2>
-                  <div
-                    className="border border-gray-400 rounded-lg grid grid-cols-[37.5%_10%_37.5%_15%]
-                    sm:grid-cols-[40%_10%_40%_10%]
-                    items-center p-4"
-                  >
-                    <div className="text-xs sm:text-base py-2 px-1 sm:px-4 font-semibold flex justify-between">
-                      <div className="truncate text-right w-2/3 sm:w-3/4 pr-2">
-                        {fixture.teamHome}
-                      </div>
-                      <div className="w-1/3 sm:w-1/4 text-center">
-                        {fixture.shortHome}
-                      </div>
-                    </div>
-                    <div
-                      className={`${fixture.live && "bg-red-500 text-white"}
-                    ${fixture.finished && "bg-gray-900 text-white"}
-                     font-bold text-xs sm:text-base rounded-lg flex justify-between p-2`}
-                    >
-                      <div>{fixture.teamHomeScore}</div>
-                      <span>:</span>
-                      <span>{fixture.teamAwayScore}</span>
-                    </div>
-                    <div className="text-xs sm:text-base py-2 px-1 sm:px-4 font-semibold flex justify-between">
-                      <div className="w-1/3 sm:w-1/4 text-center">
-                        {fixture.shortAway}
-                      </div>
-                      <div className="truncate text-left w-2/3 sm:w-3/4 pl-2">
-                        {fixture.teamAway}
-                      </div>
-                    </div>
-                    <div className="py-2 text-center space-x-2">
-                      <button onClick={() => openEditModal(fixture)}>
-                        <Pencil size={16} />
-                      </button>
-                      <button onClick={() => openDeleteModal(fixture)}>
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </div>
-                  {fixture.live && (
-                    <p className="text-center text-xs sm:text-base text-red-500 font-semibold">
-                      Live
-                    </p>
-                  )}
-                  {fixture.finished && (
-                    <p className="text-center text-xs sm:text-base font-semibold">Finished</p>
-                  )}
-                </div>
+                <FixtureItem
+                  openDeleteModal={openDeleteModal}
+                  openEditModal={openEditModal}
+                  key={fixture._id}
+                  fixture={fixture}
+                />
               ))}
             </div>
           </div>
@@ -306,7 +264,7 @@ const Fixtures = () => {
 
         {/*Edit on normal screens */}
         {showEditModal && selectedFixture && (
-          <div className="text-sm h-full hidden md:block flex items-center justify-center">
+          <div className="border text-sm hidden md:block flex items-center justify-center">
             <div className="h-full flex flex-col items center justify-center bg-white p-6 max-w-sm w-full space-y-4">
               {selectedFixture.live && (
                 <h3 className="text-lg font-semibold">Edit Scores</h3>
@@ -641,7 +599,7 @@ const Fixtures = () => {
         <div className="flex justify-end mt-4">
           <button
             onClick={openAddModal}
-            className="w-16 border bg-black text-white rounded-lg px-4 py-4 text-lg"
+            className="w-16 border bg-black text-white rounded-lg px-4 py-4 text-sm"
           >
             <Plus className="w-4 h-4" />
           </button>
@@ -653,8 +611,8 @@ const Fixtures = () => {
         <div className="md:hidden fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-md max-w-sm w-full space-y-4">
             {selectedFixture.finished && (
-                <h3 className="text-lg font-semibold">Match has ended</h3>
-              )}
+              <h3 className="text-lg font-semibold">Match has ended</h3>
+            )}
             {selectedFixture.live && (
               <h3 className="text-lg font-semibold">Edit Scores</h3>
             )}
