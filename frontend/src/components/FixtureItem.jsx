@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 const FixtureItem = (props) => {
   const { fixture, openEditModal, openDeleteModal } = props;
   const { userInfo } = useSelector((state) => state.auth);
-  console.log(userInfo);
 
   const newDate = new Date(fixture.kickOffTime);
   const newTime = newDate.toLocaleTimeString();

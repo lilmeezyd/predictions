@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { useGetFixturesQuery } from "../slices/fixtureApiSlice";
 import { useGetTeamsQuery } from "../slices/teamApiSlice";
-import { useGetMatchdaysQuery } from "../slices/matchdayApiSlice";
+import { useGetMatchdaysQuery, useGetCurrentMatchdayQuery } from "../slices/matchdayApiSlice";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
 import PredictionItem from "./PredictionItem";
 
@@ -9,6 +9,7 @@ const PredictionSection = () => {
   const { data = [], isLoading } = useGetFixturesQuery();
   const { data: teams = [] } = useGetTeamsQuery();
   const { data: matchdays = [] } = useGetMatchdaysQuery();
+  const { data: matchdayIdObj = {} } = useGetCurrentMatchdayQuery();
   const itemsPerPage = 1;
   const [currentPage, setCurrentPage] = useState(1);
   const fixtures = fixturesByMatchday(data);
@@ -20,12 +21,17 @@ const PredictionSection = () => {
         if (x.kickOffTime !== y.kickOffTime) {
           return x.kickOffTime > y.kickOffTime ? 1 : -1;
         }
-        return x.teamHome.localeCompare(y.teamHome);
+        return x?.teamHome?.localeCompare(y?.teamHome);
       }) || [];
 
     return returnedFixtures;
   }, [fixtures, currentPage]);
   const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
+
+  useEffect(() => {
+    setCurrentPage(matchdayIdObj?.matchday);
+  }, [matchdayIdObj])
+
   if (isLoading) {
     return <div>Loading...</div>;
   }

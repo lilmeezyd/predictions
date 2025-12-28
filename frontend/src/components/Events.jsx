@@ -4,6 +4,8 @@ import {
   useAddMatchdayMutation,
   useEditMatchdayMutation,
   useDeleteMatchdayMutation,
+  useStartMatchdayMutation,
+  useResetMatchdaysMutation
 } from "../slices/matchdayApiSlice";
 import { Pencil, Trash2, Plus, CircleCheck, CircleX } from "lucide-react";
 import { toast } from "sonner";
@@ -13,6 +15,8 @@ const Events = () => {
   const [addMatchday] = useAddMatchdayMutation();
   const [editMatchday] = useEditMatchdayMutation();
   const [deleteMatchday] = useDeleteMatchdayMutation();
+  const [startMatchday] = useStartMatchdayMutation();
+  const [resetMatchday] = useResetMatchdaysMutation();
   const itemsPerPage = 10;
   const [currentPage, setCurrentPage] = useState(1);
   const [event, setEvent] = useState(null);
@@ -32,7 +36,7 @@ const Events = () => {
   const totalPages = Math.ceil(data?.length / itemsPerPage);
   const openEditModal = (event) => {
     setSelectedEvent(event);
-    setEditEvent(event.matchdayId)
+    setEditEvent(event.matchdayId);
     setShowEditModal(true);
     setShowAddModal(false);
   };
@@ -71,10 +75,10 @@ const Events = () => {
       const res = await editMatchday({
         id: selectedEvent._id,
         matchdayId: editEvent,
-        oldId: selectedEvent.matchdayId
+        oldId: selectedEvent.matchdayId,
       }).unwrap();
 
-      toast.success(`${res?.name} updated!`);
+      toast.success(res?.msg);
       setShowEditModal(false);
     } catch (err) {
       toast.error(err?.data?.message);
@@ -90,9 +94,28 @@ const Events = () => {
       setShowDeleteModal(false);
     } catch (err) {
       toast.error(err?.data?.message);
-      console.error(err);
     }
   };
+
+  const confirmStart = async () => {
+    if (!selectedEvent?._id) return;
+    try {
+      await startMatchday(selectedEvent._id).unwrap();
+      toast.success("Event Started!")
+      setShowEditModal(false);
+    } catch (err) {
+      toast.error(err?.data?.message);
+      setShowEditModal(false)
+    }
+  }
+  const confirmReset = async () => {
+    try {
+      const res = await resetMatchday().unwrap();
+      toast.success(res.message)
+    } catch (err) {
+      toast.error(err?.data?.message);
+    }
+  }
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -207,6 +230,12 @@ const Events = () => {
                 >
                   Cancel
                 </button>
+                {!selectedEvent.current && !selectedEvent.finished && <button
+                  onClick={confirmStart}
+                  className="px-3 py-1 border rounded  bg-blue-600 text-white"
+                >
+                  Start GW
+                </button>}
                 <button
                   onClick={confirmEdit}
                   className="px-3 py-1 bg-blue-600 text-white rounded"
@@ -251,10 +280,11 @@ const Events = () => {
         )}
       </div>
 
-      <div className="flex justify-end mt-4">
+      <div className="flex justify-around mt-4">
+        <button onClick={confirmReset} className="px-3 bg-blue-600 text-white rounded text-sm">Reset</button>
         <button
           onClick={openAddModal}
-          className="w-16 border bg-black text-white rounded-lg px-4 py-4 text-lg"
+          className="w-16 border bg-black text-white rounded-lg px-4 py-4 text-sm"
         >
           <Plus className="w-4 h-4" />
         </button>
@@ -280,6 +310,12 @@ const Events = () => {
               >
                 Cancel
               </button>
+              {!selectedEvent.current &&  !selectedEvent.finished && <button
+                  onClick={confirmStart}
+                  className="px-3 py-1 border rounded  bg-blue-600 text-white"
+                >
+                  Start GW
+                </button>}
               <button
                 onClick={confirmEdit}
                 className="px-3 py-1 bg-blue-600 text-white rounded"

@@ -1,5 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Matchday from "../models/matchdayModel.js";
+import Overall from "../models/overallStandingsModel.js";
 
 //@desc Create Matchday
 //@route POST /api/matchdays
@@ -64,48 +65,42 @@ const getMatchday = asyncHandler(async (req, res) => {
 });
 
 //@desc Start Matchday
-//@route PATCH /api/matchdays/:id
+//@route PATCH /api/matchdays/:id/set-current-matchday
 //@access Private
 //@role ADMIN
 const setCurrentMatchday = asyncHandler(async (req, res) => {
-  const currentMatchday = await Matchday.findOne({ current: true });
+  const matchdayReq = await Matchday.findById(req.params.id)
   const matchdays = await Matchday.find({}).lean();
   const firstGW = Math.min(...matchdays.map((x) => x.matchdayId));
   const lastGW = Math.max(...matchdays.map((x) => x.matchdayId));
+  if(!matchdayReq) {
+    throw new Error('Matchday not found!')
+  }
+  const { current, matchdayId, finished } = matchdayReq
+  if(current) {
+    throw new Error('This matchday is already live')
+  }
 
-  if (!currentMatchday) {
-    const isNotFinished = await Matchday.findOne({
-        finished: false,
-      matchdayId: firstGW,
-    });
-   if (isNotFinished) {
-      await Matchday.updateOne(
-        { matchdayId: firstGW },
-        { $set: { current: true } }
-      );
-    } else {
-        res.status(400);
-      throw new Error("There are no more matchdays!");
-    }
+  if(finished) {
+    throw new Error('This matchday is already finished')
+  }
+
+  if(matchdayId === firstGW) {
+    await Matchday.updateOne({_id: req.params.id}, {$set: {current: true}})
   } else {
-    await Matchday.updateOne(
-      { matchdayId: currentMatchday.matchdayId },
-      { $set: { current: false, finished: true } }
-    );
-    const nextMatchdayId = currentMatchday.matchdayId + 1;
-  if (nextMatchdayId <= lastGW) {
-    await Matchday.updateOne(
-      { matchdayId: nextMatchdayId },
-      { $set: { current: true } }
-    );
-  }
+    const prevMD = matchdayId-1
+    await Matchday.updateOne({_id: req.params.id}, {$set: {current: true}})
+    await Matchday.updateOne({matchdayId: prevMD}, { $set: { current: false, finished: true}})
   }
 
+  await Overall.updateMany({}, [{$set: { oldRank: "$rank"}}])
 
   res.status(200).json({
-    message: `Matchdays updated`,
+    message: `Event Started`,
+    matchdayReq
   });
 });
+
 
 //@desc Update Matchday
 //@route PUT /api/matchdays/:id
@@ -130,6 +125,13 @@ const updateMatchday = asyncHandler(async (req, res) => {
 
   if(parseInt(oldId) === parseInt(matchdayId)) {
     throw new Error("The new and old matchday Ids are the same!")
+  }
+  if(matchday.current) {
+    throw new Error('You can not edit a live matchday')
+  }
+
+  if(matchday.finished) {
+    throw new Error('You can not edit a finished matchday')
   }
 
   let id = parseInt(matchdayId);
@@ -214,8 +216,20 @@ const getCurrentMatchday = asyncHandler(async (req, res) => {
   }
   const { matchdayId } = matchday;
 
-  res.status(200).json(matchdayId);
+  res.status(200).json({matchday: matchdayId});
 });
+
+//@desc Max and Min Matchday
+//@route GET /api/matchday/max-min
+//@access Public
+//@roles Everyone
+const getMatchdayMaxNMin = asyncHandler(async (req, res) => {
+  const matchdays = await Matchday.find().lean();
+  const minMD = Math.min(...matchdays.map(x => x.matchdayId))
+  const maxMD = Math.max(...matchdays.map(x => x.matchdayId))
+
+  res.json({max: maxMD, min: minMD})
+})
 
 export {
   createMatchday,
@@ -226,4 +240,5 @@ export {
   updateMatchday,
   deleteMatchday,
   getCurrentMatchday,
+  getMatchdayMaxNMin
 };

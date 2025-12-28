@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   useGetFixturesQuery,
   useAddFixtureMutation,
@@ -10,7 +10,11 @@ import {
   useResetMatchMutation,
 } from "../slices/fixtureApiSlice";
 import { useGetTeamsQuery } from "../slices/teamApiSlice";
-import { useGetMatchdaysQuery } from "../slices/matchdayApiSlice";
+import {
+  useGetMatchdayMaxNMinQuery,
+  useGetCurrentMatchdayQuery,
+  useGetMatchdaysQuery,
+} from "../slices/matchdayApiSlice";
 import { Pencil, Trash2, Plus, CircleCheck, CircleX } from "lucide-react";
 import { toast } from "sonner";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
@@ -27,6 +31,8 @@ const Fixtures = () => {
   const [editMatchScores] = useEditMatchScoresMutation();
   const { data: teams = [] } = useGetTeamsQuery();
   const { data: matchdays = [] } = useGetMatchdaysQuery();
+  const { data: matchdayData = {} } = useGetCurrentMatchdayQuery();
+  const { data: minMaxData = {} } = useGetMatchdayMaxNMinQuery();
   const itemsPerPage = 1;
   const [currentPage, setCurrentPage] = useState(1);
   const [fixture, setFixture] = useState(null);
@@ -64,6 +70,12 @@ const Fixtures = () => {
     editKickOff,
     editTime,
   } = fixtureData;
+  const min = minMaxData?.min;
+  const max = minMaxData?.max;
+
+  useEffect(() => {
+    setCurrentPage(matchdayData?.matchday);
+  }, [matchdayData]);
   const groupedFixtures = useMemo(() => {
     const sortable = [...fixtures];
     const filtered = sortable.find((x) => x.matchday === currentPage) || {};
@@ -240,20 +252,20 @@ const Fixtures = () => {
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-2">
               <button
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+                disabled={currentPage === min}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Prev
               </button>
               <div className="text-sm">
-                Page {currentPage} of {totalPages}
+                Matchday {currentPage}
               </div>
               <button
                 onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  setCurrentPage((p) => p + 1)
                 }
-                disabled={currentPage === totalPages}
+                disabled={currentPage === max}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Next

@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Matchday from "../models/matchdayModel.js";
 import Fixture from "../models/fixtureModel.js";
 import Prediction from "../models/predictionModel.js";
+import User from "../models/userModel.js";
 
 export const makePredictions = asyncHandler(async (req, res) => {
   if (!req.user) {
@@ -78,8 +79,31 @@ export const makePredictions = asyncHandler(async (req, res) => {
   });
 });
 
+export const getPredictionsByPlayer = asyncHandler(async (req, res) => {
+  const player = await User.findById(req.params.id);
+  const matchday = await Matchday.findOne({
+    matchdayId: parseInt(req.params.mid),
+  });
+  if (!player) {
+    throw new Error("Player not found");
+  }
+  if (!matchday) {
+    throw new Error("Matchday not found");
+  }
+  const { _id } = matchday;
+  const predictions = await Prediction.find({
+    player: req.params.id,
+    matchday: _id,
+    $or: [{ live: true }, { finished: true }],
+  })
+    .populate("player", "firstName lastName")
+    .populate("matchday", "matchdayId")
+    .populate("fixture", "finished live kickOffTime")
+    .populate("teamAway", "name shortName")
+    .populate("teamHome", "name shortName");
 
-export const getPredictionsByPlayer = asyncHandler(async (req, res) => {})
+  res.json(predictions);
+});
 
 export const getMyPredictions = asyncHandler(async (req, res) => {
   if (!req.user) {
@@ -107,4 +131,3 @@ export const getMyPredictions = asyncHandler(async (req, res) => {
 
   res.status(200).json(prediction);
 });
-

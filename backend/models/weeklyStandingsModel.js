@@ -13,6 +13,10 @@ const weeklySchema = mongoose.Schema({
     required: true,
     index: true,
   },
+  oldRank: {
+    type: Number,
+    index: true
+  },
   rank: {
     type: Number,
     index: true,

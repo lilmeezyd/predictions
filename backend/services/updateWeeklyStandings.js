@@ -32,11 +32,14 @@ export const updateWeeklyStandings = asyncHandler(async (matchday) => {
       },
       {
         $setWindowFields: {
-          sortBy: { points: -1, player: 1 },
+          sortBy: { points: -1 },
           output: {
             rank: {
               $rank: {},
             },
+            oldRank: {
+              $rank: {}
+            }
           },
         },
       },

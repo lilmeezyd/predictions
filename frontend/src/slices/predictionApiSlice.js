@@ -12,8 +12,8 @@ export const predictionApiSlice = apiSlice.injectEndpoints({
       invalidatesTags: ['Prediction']
     }),
     getPredictionsByPlayer: builder.query({
-      query: (id) => ({
-        url: `${PREDICTIONS_URL}/${id}`
+      query: ({id, mid}) => ({
+        url: `${PREDICTIONS_URL}/${id}/matchday/${mid}`
       }),
       providesTags: ['Prediction']
     }),

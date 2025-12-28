@@ -9,6 +9,11 @@ const overallSchema = mongoose.Schema(
       index: true,
     },
     points: { type: Number, default: null },
+    oldRank: {
+      type: Number,
+      default: 0,
+      index: true,
+    },
     rank: {
       type: Number,
       index: true,

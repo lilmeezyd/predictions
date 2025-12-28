@@ -6,13 +6,13 @@ export const matchdayApiSlice = apiSlice.injectEndpoints({
     getMatchdays: builder.query({
       query: () => ({
         url: `${MATCHDAYS_URL}`,
-      }), 
-      providesTags: ['Matchday']
+      }),
+      providesTags: ["Matchday"],
     }),
     getMatchday: builder.query({
       query: (id) => ({
-        url: `${MATCHDAYS_URL}/${id}`
-      })
+        url: `${MATCHDAYS_URL}/${id}`,
+      }),
     }),
     addMatchday: builder.mutation({
       query: (data) => ({
@@ -20,49 +20,68 @@ export const matchdayApiSlice = apiSlice.injectEndpoints({
         method: "POST",
         body: data,
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
     }),
     startMatchday: builder.mutation({
       query: (id) => ({
-        url: `${MATCHDAYS_URL}/${id}`,
-        method: "PATCH"
+        url: `${MATCHDAYS_URL}/${id}/set-current-matchday`,
+        method: "PATCH",
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
+    }),
+    resetMatchdays: builder.mutation({
+      query: (id) => ({
+        url: `${MATCHDAYS_URL}/reset`,
+        method: "PATCH",
+      }),
+      invalidatesTags: ["Matchday"],
     }),
     editMatchday: builder.mutation({
-      query: ({id, ...rest}) => ({
+      query: ({ id, ...rest }) => ({
         url: `${MATCHDAYS_URL}/${id}`,
         method: "PATCH",
         body: rest,
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
+    }),
+    getCurrentMatchday: builder.query({
+      query: () => ({
+        url: `${MATCHDAYS_URL}/current`,
+      }),
+      providesTags: ["Matchday"]
     }),
     deleteMatchday: builder.mutation({
       query: (id) => ({
         url: `${MATCHDAYS_URL}/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
     }),
     updateMatchdayData: builder.mutation({
       query: (id) => ({
         url: `${MATCHDAYS_URL}/updateMdData/${id}`,
-        method: 'PATCH'
+        method: "PATCH",
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
     }),
     getMaxId: builder.query({
       query: () => ({
         url: `${MATCHDAYS_URL}/data/max`,
-        method: 'GET'
+        method: "GET",
       }),
     }),
     endMatchdayData: builder.mutation({
       query: (id) => ({
         url: `${MATCHDAYS_URL}/endmatchday/${id}`,
-        method: 'PATCH'
+        method: "PATCH",
       }),
-      invalidatesTags: ['Matchday']
+      invalidatesTags: ["Matchday"],
+    }),
+    getMatchdayMaxNMin: builder.query({
+      query: () => ({
+        url: `${MATCHDAYS_URL}/min-max`
+      }),
+      providesTags: ["Matchday"]
     })
   }),
 });
@@ -77,4 +96,7 @@ export const {
   useStartMatchdayMutation,
   useEditMatchdayMutation,
   useDeleteMatchdayMutation,
+  useResetMatchdaysMutation,
+  useGetCurrentMatchdayQuery,
+  useGetMatchdayMaxNMinQuery
 } = matchdayApiSlice;

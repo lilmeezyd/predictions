@@ -113,6 +113,15 @@ const updateUserProfile = asyncHandler(async (req, res) => {
   });
 });
 
+const getSingleUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id).select("firstName lastName")
+  if(!user) {
+    throw new Error('User not found!')
+  }
+
+  res.json(user)
+})
+
 //@desc
 //@route GET /api/users/all
 //@access Private
@@ -129,4 +138,5 @@ export {
   logoutUser,
   updateUserProfile,
   getAllUsers,
+  getSingleUser
 };

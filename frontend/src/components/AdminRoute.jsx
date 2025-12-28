@@ -7,7 +7,11 @@ const AdminRoute = () => {
     <Navigate to="/" replace />;
   }
 
-  return (userInfo && userInfo?.roles?.ADMIN) ? <Outlet /> : <Navigate to='/' replace />
+  return userInfo && userInfo?.roles?.ADMIN ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/" replace />
+  );
 };
 
-export default AdminRoute; 
+export default AdminRoute;

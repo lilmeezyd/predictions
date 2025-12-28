@@ -7,7 +7,8 @@ import {
   logoutUser,
   updateUserProfile,
   getAllUsers,
-  getProfile
+  getProfile,
+  getSingleUser
 } from "../controllers/userController.js";
 const router = express.Router();
 
@@ -17,5 +18,6 @@ router.post("/logout", logoutUser);
 router.get("/all", protect, roles(ROLES.ADMIN), getAllUsers)
 router.get("/me", protect, getProfile);
 router.put("/profile", protect, updateUserProfile);
+router.get("/:id", protect, getSingleUser)
 
 export default router;

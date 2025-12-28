@@ -10,7 +10,7 @@ export const updateOverallStandings = asyncHandler(async () => {
     },
     {
       $setWindowFields: {
-        sortBy: { points: -1, player: 1 },
+        sortBy: { points: -1 },
         output: {
           rank: {
             $rank: {},

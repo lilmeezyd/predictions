@@ -12,6 +12,7 @@ import Events from "./components/Events";
 import NormalFixtures from "./components/NormalFixtures";
 import NormalTables from "./components/NormalTables";
 import PredictionSection from "./components/PredictionSection";
+import PlayerPredictions from "./components/PlayerPredictions";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
 import NormalRoute from "./components/NormalRoute";
@@ -31,9 +32,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="" element={<NormalRoute />}>
           <Route path="predictions" element={<Predictions />}>
-          <Route path="selections" element={<PredictionSection />}/>
-          <Route path="fixtures" element={<NormalFixtures />} />
-          <Route path="tables" element={<NormalTables />} />
+            <Route path="selections" element={<PredictionSection />} />
+            <Route path="fixtures" element={<NormalFixtures />} />
+            <Route path="tables" element={<NormalTables />} />
+            <Route path="players/:id/matchday/:mid" element={<PlayerPredictions />} />
           </Route>
         </Route>
         <Route path="" element={<AdminRoute />}>
@@ -43,6 +45,7 @@ function App() {
             <Route path="players" element={<Players />} />
             <Route path="tables" element={<Tables />} />
             <Route path="events" element={<Events />} />
+            <Route path="players/:id/matchday/:mid" element={<PlayerPredictions />} />
           </Route>
         </Route>
       </Routes>

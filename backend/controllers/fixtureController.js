@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import Fixture from "../models/fixtureModel.js";
 import User from "../models/userModel.js";
 import Matchday from "../models/matchdayModel.js";
+import Prediction from "../models/predictionModel.js";
 import { updatePlayerPoints } from "../services/updatePlayerPoints.js";
 
 //@desc Set Fixture
@@ -133,11 +134,24 @@ const editScores = asyncHandler(async (req, res) => {
     { $set: { teamAwayScore, teamHomeScore } },
     { new: true }
   );
-  if (updatedFixture) {
-    const { _id: fixtureId, matchday, teamAwayScore, teamHomeScore, teamAway, teamHome } =
-      updatedFixture;
-    await updatePlayerPoints(fixtureId, matchday, teamAwayScore, teamHomeScore, teamAway, teamHome)
-  }
+  /*if (updatedFixture) {
+    const {
+      _id: fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome,
+    } = updatedFixture;
+    await updatePlayerPoints(
+      fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome
+    );
+  }*/
   res.json("scores updated");
 });
 
@@ -217,6 +231,9 @@ const startFixture = asyncHandler(async (req, res) => {
     { $set: { live: true, teamAwayScore: 0, teamHomeScore: 0 } },
     { new: true }
   );
+  if (updatedFixture) {
+    await Prediction.updateMany({fixture: updatedFixture?.fixtureId}, [{ $set: { live: true } }]);
+  }
   res.json(updatedFixture);
 });
 
@@ -244,6 +261,25 @@ const endFixture = asyncHandler(async (req, res) => {
     { $set: { finished: true, live: false } },
     { new: true }
   );
+  if (updatedFixture) {
+    const {
+      _id: fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome,
+    } = updatedFixture;
+    await updatePlayerPoints(
+      fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome
+    );
+    await Prediction.updateMany({fixture: fixtureId}, [{ $set: { finished: true } }]);
+  }
   res.json(updatedFixture);
 });
 
@@ -270,6 +306,35 @@ const resetFixture = asyncHandler(async (req, res) => {
     },
     { new: true }
   );
+  if (updatedFixture) {
+    const {
+      _id: fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome,
+    } = updatedFixture;
+    await updatePlayerPoints(
+      fixtureId,
+      matchday,
+      teamAwayScore,
+      teamHomeScore,
+      teamAway,
+      teamHome 
+    );
+    await Prediction.updateMany({fixture: fixtureId}, [
+      {
+        $set: {
+          live: false,
+          finished: false,
+          teamAwayScore: null,
+          teamHomeScore: null,
+          predictionPoints: null,
+        },
+      },
+    ]);
+  }
   res.json(updatedFixture);
 });
 

@@ -1,9 +1,11 @@
-import { useMemo, useState } from "react";
-import {
-  useGetFixturesQuery,
-} from "../slices/fixtureApiSlice";
+import { useMemo, useState, useEffect } from "react";
+import { useGetFixturesQuery } from "../slices/fixtureApiSlice";
 import { useGetTeamsQuery } from "../slices/teamApiSlice";
-import { useGetMatchdaysQuery } from "../slices/matchdayApiSlice";
+import {
+  useGetMatchdayMaxNMinQuery,
+  useGetCurrentMatchdayQuery,
+  useGetMatchdaysQuery,
+} from "../slices/matchdayApiSlice";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
 import FixtureItem from "./FixtureItem";
 
@@ -11,9 +13,17 @@ const NormalFixtures = () => {
   const { data = [], isLoading } = useGetFixturesQuery();
   const { data: teams = [] } = useGetTeamsQuery();
   const { data: matchdays = [] } = useGetMatchdaysQuery();
+  const { data: matchdayData = {} } = useGetCurrentMatchdayQuery();
+  const { data: minMaxData = {} } = useGetMatchdayMaxNMinQuery();
   const itemsPerPage = 1;
   const [currentPage, setCurrentPage] = useState(1);
   const fixtures = fixturesByMatchday(data);
+  const min = minMaxData?.min;
+  const max = minMaxData?.max;
+
+  useEffect(() => {
+    setCurrentPage(matchdayData?.matchday);
+  }, [matchdayData]);
   const groupedFixtures = useMemo(() => {
     const sortable = [...fixtures];
     const filtered = sortable.find((x) => x.matchday === currentPage) || {};
@@ -27,17 +37,14 @@ const NormalFixtures = () => {
 
     return returnedFixtures;
   }, [fixtures, currentPage]);
-  const totalPages = Math.ceil(groupedFixtures?.length / itemsPerPage);
+  const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
 
-console.log(groupedFixtures)
   if (isLoading) {
     return <div>Loading...</div>;
   }
   return (
     <>
-      <div
-        className={`grid grid-cols-[1fr] justify-between items-center`}
-      >
+      <div className={`grid grid-cols-[1fr] justify-between items-center`}>
         <div>
           <div className="w-full overflow-x-auto space-y-4">
             <div>
@@ -45,10 +52,7 @@ console.log(groupedFixtures)
                 Matchday&nbsp;{currentPage}
               </h1>
               {groupedFixtures.map((fixture) => (
-                <FixtureItem
-                  key={fixture._id}
-                  fixture={fixture}
-                />
+                <FixtureItem key={fixture._id} fixture={fixture} />
               ))}
             </div>
           </div>
@@ -56,20 +60,21 @@ console.log(groupedFixtures)
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-2">
               <button
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+                disabled={currentPage === min}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Prev
               </button>
-              <div className="text-sm">
+              {/*<div className="text-sm">
                 Page {currentPage} of {totalPages}
+              </div>*/}
+              <div className="text-sm">
+                Matchday {currentPage}
               </div>
               <button
-                onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
-                }
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => p + 1)}
+                disabled={currentPage === max}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Next
