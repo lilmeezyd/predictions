@@ -21,7 +21,7 @@ const Login = (props) => {
 
   useEffect(() => {
     if (userInfo && userInfo?.roles?.NORMAL_USER) {
-      navigate("/predictions");
+      navigate("/predictions/selections");
     }
     if (userInfo && userInfo?.roles?.ADMIN) {
       navigate("/admin");
