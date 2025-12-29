@@ -119,6 +119,10 @@ const Fixtures = () => {
   };
 
   const confirmAdd = async () => {
+    console.log(`Home: ${teamHome}`)
+    console.log(`Away: ${teamAway}`)
+    console.log(`Matchday: ${matchday}`)
+    console.log(new Date(kickOff + "/" + time))
     try {
       const res = await addFixture({
         teamHome,
