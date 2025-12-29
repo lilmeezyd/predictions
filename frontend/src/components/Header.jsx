@@ -6,10 +6,10 @@ import { LogOut } from "lucide-react";
 import { useState } from "react";
 
 const navItems = [
-  {
+  {/*
     name: "Home",
     path: "/predictions",
-  },
+  */},
   { name: "Predictions", path: "/predictions/selections" },
   {
     name: "Fixtures",
