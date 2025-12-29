@@ -232,7 +232,7 @@ const startFixture = asyncHandler(async (req, res) => {
     { new: true }
   );
   if (updatedFixture) {
-    await Prediction.updateMany({fixture: updatedFixture?.fixtureId}, [{ $set: { live: true } }]);
+    await Prediction.updateMany({fixture: updatedFixture?._id}, [{ $set: { live: true } }]);
   }
   res.json(updatedFixture);
 });

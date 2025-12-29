@@ -22,7 +22,7 @@ export const updateOverallStandings = asyncHandler(async () => {
       $merge: {
         into: "overalls",
         on: ["player"],
-        whenMatched: "replace",
+        whenMatched: "merge",
         whenNotMatched: "insert",
       },
     },
