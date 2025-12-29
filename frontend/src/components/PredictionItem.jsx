@@ -102,7 +102,6 @@ const PredictionItem = (props) => {
       const res = await makePredictions({
         matchday: fixture?.matchdayId,
         fixture: fixture?._id,
-        player: userInfo?._id,
         teamHome: fixture?.teamHomeId,
         teamAway: fixture?.teamAwayId,
         homePrediction,

@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ArrowUp, ArrowDown, ArrowRight } from "lucide-react";
+import { ArrowUpCircle, ArrowDownCircle, ArrowRightCircle } from "lucide-react";
 import { useGetCurrentMatchdayQuery } from "../slices/matchdayApiSlice";
 const TableDisplay = ({ data, userInfo }) => {
   const { data: matchdayIdObj = {} } = useGetCurrentMatchdayQuery();
@@ -32,26 +32,43 @@ const TableDisplay = ({ data, userInfo }) => {
           className="standing-grid-1  text-sm"
           key={entry.playerId}
         >
-          <div>
-            {entry.oldRank > entry.rank && entry.oldRank > 0 && (
-              <ArrowUp color="green" size={16} />
-            )}
-            {(entry.oldRank === entry.rank || entry.oldRank === 0) && (
-              <ArrowRight color="gray" size={16} />
-            )}
-            {entry.oldRank < entry.rank && entry.oldRank > 0 && (
-              <ArrowDown color="red" size={16} />
-            )}
+          <div className="font-bold w-full flex items-center justify-center">
+            <div>
+              {entry.oldRank > entry.rank && entry.oldRank > 0 && (
+                <ArrowUpCircle className="text-green-500" size={16} />
+              )}
+              {(entry.oldRank === entry.rank || entry.oldRank === 0) && (
+                <ArrowRightCircle className="text-gray-500" size={16} />
+              )}
+              {entry.oldRank < entry.rank && entry.oldRank > 0 && (
+                <ArrowDownCircle className="text-red-500" size={16} />
+              )}
+            </div>
+            <div
+              className={`ml-1 font-bold text-xs ${
+                entry.oldRank < entry.rank
+                  ? "text-red-500"
+                  : entry.oldRank > entry.rank
+                  ? `text-green-500`
+                  : ""
+              }`}
+            >
+              {entry.oldRank < entry.rank
+                ? entry.oldRank - entry.rank
+                : entry.oldRank > entry.rank
+                ? +(entry.oldRank - entry.rank)
+                : ""}
+            </div>
           </div>
           <div>{entry.rank}</div>
           <div>
             <Link
               to={`${
-                userInfo.roles.ADMIN ?
-                `/admin/players/${entry.playerId}/matchday/${matchdayIdObj.matchday}` : 
-                userInfo?._id?.toString() === entry?.playerId?.toString() ?  
-                `/predictions/selections`:
-                `/predictions/players/${entry.playerId}/matchday/${matchdayIdObj.matchday}`
+                userInfo.roles.ADMIN
+                  ? `/admin/players/${entry.playerId}/matchday/${matchdayIdObj.matchday}`
+                  : userInfo?._id?.toString() === entry?.playerId?.toString()
+                  ? `/predictions/selections`
+                  : `/predictions/players/${entry.playerId}/matchday/${matchdayIdObj.matchday}`
               }`}
             >
               {entry.firstName}&nbsp;&nbsp;{entry.lastName}

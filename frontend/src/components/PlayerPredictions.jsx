@@ -31,6 +31,7 @@ const PlayerPredictions = () => {
   const max = matchdayData?.matchday;
 
   const playerPredictions = formattedPlayerPredictions(predictions);
+  console.log(predictions)
   const playerName = formattedPlayerName(singleUser);
   const possessiveName = playerName?.endsWith("s")
     ? `${playerName}'`

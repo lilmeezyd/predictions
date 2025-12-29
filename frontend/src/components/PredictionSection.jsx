@@ -27,6 +27,8 @@ const PredictionSection = () => {
     return returnedFixtures;
   }, [fixtures, currentPage]);
   const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
+  const min = Math.min(...fixtures.map(x => x.matchday))
+  const max = Math.max(...fixtures.map(x => x.matchday))
 
   useEffect(() => {
     setCurrentPage(matchdayIdObj?.matchday);
@@ -53,20 +55,20 @@ const PredictionSection = () => {
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-2">
               <button
-                onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
-                disabled={currentPage === 1}
+                onClick={() => setCurrentPage((p) => p - 1)}
+                disabled={currentPage <= min}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Prev
               </button>
               <div className="text-sm">
-                Page {currentPage} of {totalPages}
+                Matchday {currentPage}
               </div>
               <button
                 onClick={() =>
-                  setCurrentPage((p) => Math.min(p + 1, totalPages))
+                  setCurrentPage((p) => p + 1)
                 }
-                disabled={currentPage === totalPages}
+                disabled={currentPage >= max}
                 className="text-sm px-3 py-1 border rounded disabled:opacity-50"
               >
                 Next
