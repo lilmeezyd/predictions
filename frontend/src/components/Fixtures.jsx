@@ -119,10 +119,6 @@ const Fixtures = () => {
   };
 
   const confirmAdd = async () => {
-    console.log(`Home: ${teamHome}`)
-    console.log(`Away: ${teamAway}`)
-    console.log(`Matchday: ${matchday}`)
-    console.log(new Date(kickOff + "/" + time))
     try {
       const res = await addFixture({
         teamHome,
@@ -929,7 +925,7 @@ const Fixtures = () => {
                 onChange={(e) => {
                   setFixtureData((prev) => ({
                     ...prev,
-                    time: e.target.value,
+                    teamHome: e.target.value,
                   }));
                 }}
                 className="w-full px-3 py-1 border rounded"
@@ -949,7 +945,7 @@ const Fixtures = () => {
                 onChange={(e) => {
                   setFixtureData((prev) => ({
                     ...prev,
-                    time: e.target.value,
+                    teamAway: e.target.value,
                   }));
                 }}
                 className="w-full px-3 py-1 border rounded"
