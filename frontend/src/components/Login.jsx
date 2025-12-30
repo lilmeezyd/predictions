@@ -39,7 +39,7 @@ const Login = (props) => {
     }
   };
   return (
-    <div className="w-[100%] md:w-[80%] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
+    <div className="w-[95%] md:w-[80%] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
       <h1 className="text-3xl mb-2">Sign In</h1>
       <form onSubmit={onSubmit}>
         <div>
@@ -72,7 +72,8 @@ const Login = (props) => {
           </Button>
         </div>
       </form>
-      <div>
+      <div className="text-xs py-1">Forgot Password?</div>
+      <div className="text-xs">
         New user?&nbsp;
         <span className="home-link text-blue-900" onClick={registerView}>
           Register
