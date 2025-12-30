@@ -35,7 +35,7 @@ const TableDisplay = ({ data, userInfo }) => {
         <div
           style={{
             background: `${
-              userInfo._id.toString() === entry.playerId.toString()
+              userInfo?._id?.toString() === entry?.playerId?.toString()
                 ? "#ffd70063"
                 : "white"
             }`,
