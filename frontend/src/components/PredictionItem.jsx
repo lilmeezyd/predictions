@@ -89,7 +89,7 @@ const PredictionItem = (props) => {
   };
 
   // run automatically when both predictions are valid
- useEffect(() => {
+ /*useEffect(() => {
     const isValid =
       homePrediction !== undefined &&
       awayPrediction !== undefined &&
@@ -100,7 +100,7 @@ const PredictionItem = (props) => {
     if (isValid) {
       savePrediction();
     }
-  }, [data, homePrediction, awayPrediction]);
+  }, [data, homePrediction, awayPrediction]);*/
 
   const newDate = new Date(fixture.kickOffTime);
   const newTime = newDate.toLocaleTimeString();
