@@ -1,25 +1,33 @@
 import { useState } from "react";
 import Login from "../components/Login";
 import Register from "../components/Register";
+import Footer from "../components/Footer";
 
 const Home = () => {
   const [view, setView] = useState({ login: true, register: false });
-  const { login, register } = view;
-  const loginView = () => {
-    setView({ login: true, register: false });
-  };
-  const registerView = () => {
-    setView({ login: false, register: true });
-  };
+
   return (
-    <div className="h-screen px-8 grid grid-cols-1 md:grid-cols-2">
-      <div className="grid items-center h-screen">
-        {login && <Login registerView={registerView} />}
-        {register && <Register loginView={loginView} />}
+    <div className="min-h-screen flex flex-col">
+      {/* MAIN CONTENT */}
+      <div className="flex flex-1">
+        {/* LEFT SIDE */}
+        <div className="w-full md:w-1/2 flex items-center justify-center">
+          {view.login && <Login registerView={() => setView({ login: false, register: true })} />}
+          {view.register && <Register loginView={() => setView({ login: true, register: false })} />}
+        </div>
+
+        {/* RIGHT IMAGE */}
+        <div className="hidden md:block w-1/2">
+          <img
+            src="/backgroundImage.png"
+            alt="background"
+            className="w-full h-full object-cover"
+          />
+        </div>
       </div>
-      <div className="hidden md:block">
-        <h1>Image goes here....</h1>
-      </div>
+
+      {/* FOOTER */}
+      <Footer />
     </div>
   );
 };

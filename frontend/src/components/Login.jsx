@@ -39,7 +39,7 @@ const Login = (props) => {
     }
   };
   return (
-    <div className="p-2">
+    <div className="w-[100%] md:w-[80%] p-4 shadow-[0_20px_60px_rgba(0,0,0,0.5)] rounded-lg">
       <h1 className="text-3xl mb-2">Sign In</h1>
       <form onSubmit={onSubmit}>
         <div>
