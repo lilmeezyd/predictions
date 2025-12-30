@@ -84,10 +84,10 @@ const Header = () => {
       {/*Mobile view for normal users*/}
       {userInfo?.roles?.NORMAL_USER && (
         <div className=" fixed top-0 left-0 right-0 z-50 md:hidden bg-white border-t shadow px-4 py-3 flex justify-between items-center">
-          <Link to="/">
+          {/*<Link to="/predictions">*/}
             {" "}
             <h1 className="text-lg font-bold">Predictions</h1>
-          </Link>
+          {/*</Link>*/}
           <div className="relative">
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
