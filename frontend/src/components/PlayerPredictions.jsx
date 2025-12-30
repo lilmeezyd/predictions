@@ -66,7 +66,7 @@ const PlayerPredictions = () => {
       )}
 
       {max > 1 && (
-        <div className="flex justify-center items-center mt-4">
+        <div className="flex justify-center items-center mt-4 gap-2">
           <Button
             type="button"
             disabled={matchday <= min}
