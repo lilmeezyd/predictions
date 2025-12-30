@@ -1,8 +1,18 @@
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import { Button } from "../../@/components/ui/button";
 import { ArrowUpCircle, ArrowDownCircle, ArrowRightCircle } from "lucide-react";
 import { useGetCurrentMatchdayQuery } from "../slices/matchdayApiSlice";
 const TableDisplay = ({ data, userInfo }) => {
   const { data: matchdayIdObj = {} } = useGetCurrentMatchdayQuery();
+   const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+    const totalPages = Math.ceil((data?.length || 0) / itemsPerPage);
+  
+  const paginatedData = data?.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
   if (!data || data.length === 0)
     return (
       <div className="font-semibold m-auto" style={{ maxWidth: "700px" }}>
@@ -10,6 +20,7 @@ const TableDisplay = ({ data, userInfo }) => {
       </div>
     );
   return (
+    <>
     <div
       className="border border-gray-400 m-auto"
       style={{ maxWidth: "700px" }}
@@ -20,7 +31,7 @@ const TableDisplay = ({ data, userInfo }) => {
         <div className="standing-grid-name">Name</div>
         <div>Points</div>
       </div>
-      {data.map((entry) => (
+      {paginatedData?.map((entry) => (
         <div
           style={{
             background: `${
@@ -78,6 +89,26 @@ const TableDisplay = ({ data, userInfo }) => {
         </div>
       ))}
     </div>
+     <div className="flex justify-center mt-4 gap-2">
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+        disabled={currentPage === 1}
+      >
+        Prev
+      </Button>
+      <span className="text-sm px-2 py-1">Page {currentPage} of {totalPages}</span>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+        disabled={currentPage === totalPages}
+      >
+        Next
+      </Button>
+    </div>
+    </>
   );
 };
 

@@ -6,6 +6,7 @@ import {
   useGetCurrentMatchdayQuery,
   useGetMatchdaysQuery,
 } from "../slices/matchdayApiSlice";
+import { Button } from "../../@/components/ui/button";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
 import FixtureItem from "./FixtureItem";
 
@@ -58,27 +59,24 @@ const NormalFixtures = () => {
           </div>
 
           {totalPages > 1 && (
-            <div className="flex justify-between items-center mt-2">
-              <button
+            <div className="flex justify-center items-center mt-4 gap-2">
+              <Button
                 onClick={() => setCurrentPage((p) => p - 1)}
                 disabled={currentPage === min}
-                className="text-sm px-3 py-1 border rounded disabled:opacity-50"
+                variant="outline"
+                size="sm"
               >
                 Prev
-              </button>
-              {/*<div className="text-sm">
-                Page {currentPage} of {totalPages}
-              </div>*/}
-              <div className="text-sm">
-                Matchday {currentPage}
-              </div>
-              <button
+              </Button>
+              <div className="text-sm">Matchday {currentPage}</div>
+              <Button
                 onClick={() => setCurrentPage((p) => p + 1)}
                 disabled={currentPage === max}
-                className="text-sm px-3 py-1 border rounded disabled:opacity-50"
+                variant="outline"
+                size="sm"
               >
                 Next
-              </button>
+              </Button>
             </div>
           )}
         </div>

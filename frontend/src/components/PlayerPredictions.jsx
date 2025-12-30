@@ -1,8 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import {
-  useGetPredictionsByPlayerQuery,
-} from "../slices/predictionApiSlice";
+import { useGetPredictionsByPlayerQuery } from "../slices/predictionApiSlice";
 import {
   useGetCurrentMatchdayQuery,
   useGetMatchdayMaxNMinQuery,
@@ -13,6 +11,7 @@ import {
   formattedPlayerName,
 } from "../hooks/formattedPlayerPredictions";
 import PlayerPredictionsItem from "../components/PlayerPredictionsItem";
+import { Button } from "../../@/components/ui/button";
 
 const PlayerPredictions = () => {
   const { id, mid } = useParams();
@@ -22,8 +21,10 @@ const PlayerPredictions = () => {
 
   const { data: matchdayData = {} } = useGetCurrentMatchdayQuery();
   const { data: minMaxData = {} } = useGetMatchdayMaxNMinQuery();
-  const { data: predictions = [], isLoading } =
-    useGetPredictionsByPlayerQuery({ id, mid });
+  const { data: predictions = [], isLoading } = useGetPredictionsByPlayerQuery({
+    id,
+    mid,
+  });
 
   const { data: singleUser = {} } = useGetSingleUserQuery(id);
 
@@ -31,7 +32,6 @@ const PlayerPredictions = () => {
   const max = matchdayData?.matchday;
 
   const playerPredictions = formattedPlayerPredictions(predictions);
-  console.log(predictions)
   const playerName = formattedPlayerName(singleUser);
   const possessiveName = playerName?.endsWith("s")
     ? `${playerName}'`
@@ -53,40 +53,40 @@ const PlayerPredictions = () => {
       </h1>
 
       <p className="text-center text-sm mb-3">
-        You're viewing <span className="font-semibold">{possessiveName}</span> predictions
+        You're viewing <span className="font-semibold">{possessiveName}</span>{" "}
+        predictions
       </p>
 
       {playerPredictions.length === 0 ? (
         <div className="text-center font-semibold">No data available</div>
       ) : (
         playerPredictions.map((prediction) => (
-          <PlayerPredictionsItem
-            key={prediction._id}
-            prediction={prediction}
-          />
+          <PlayerPredictionsItem key={prediction._id} prediction={prediction} />
         ))
       )}
 
       {max > 1 && (
-        <div className="flex justify-between mt-4">
-          <button
-          type="button"
+        <div className="flex justify-center items-center mt-4">
+          <Button
+            type="button"
             disabled={matchday <= min}
             onClick={() => navigateToMatchday(matchday - 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            variant="outline"
+            size="sm"
           >
             Prev
-          </button>
+          </Button>
 
           <span className="text-sm">Matchday {matchday}</span>
 
-          <button
+          <Button
             disabled={matchday >= max}
             onClick={() => navigateToMatchday(matchday + 1)}
-            className="px-3 py-1 border rounded disabled:opacity-50"
+            variant="outline"
+            size="sm"
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>
