@@ -29,64 +29,37 @@ const PredictionItem = (props) => {
     });
   }, [data]);
   const addToScores = (turf) => {
-    console.log('ADD')
-    if (turf === "home") {
-      if (homePrediction === undefined) {
-        setScroes((prev) => ({
-          ...prev,
-          homePrediction: 0,
-        }));
-      } else {
-        setScroes((prev) => ({
-          ...prev,
-          homePrediction: prev.homePrediction++,
-        }));
-      }
-    } else {
-      if (awayPrediction === undefined) {
-        setScroes((prev) => ({
-          ...prev,
-          awayPrediction: 0,
-        }));
-      } else {
-        setScroes((prev) => ({
-          ...prev,
-          awayPrediction: prev.awayPrediction++,
-        }));
-      }
-    }
-  };
-  const subtractFromScores = (turf) => {
-    console.log('SUBTRACT')
-    if (turf === "home") {
-      if (homePrediction > 0) {
-        setScroes((prev) => ({
-          ...prev,
-          homePrediction: prev.homePrediction--,
-        }));
-      }
-      if (homePrediction === undefined) {
-        setScroes((prev) => ({
-          ...prev,
-          homePrediction: 0,
-        }));
-      }
-    } else {
-      if (awayPrediction > 0) {
-        setScroes((prev) => ({
-          ...prev,
-          awayPrediction: prev.awayPrediction--,
-        }));
-      }
+  if (turf === "home") {
+    setScroes((prev) => ({
+      ...prev,
+      homePrediction:
+        prev.homePrediction === undefined ? 0 : prev.homePrediction + 1,
+    }));
+  } else {
+    setScroes((prev) => ({
+      ...prev,
+      awayPrediction:
+        prev.awayPrediction === undefined ? 0 : prev.awayPrediction + 1,
+    }));
+  }
+};
 
-      if (awayPrediction === undefined) {
-        setScroes((prev) => ({
-          ...prev,
-          awayPrediction: 0,
-        }));
-      }
-    }
-  };
+  const subtractFromScores = (turf) => {
+  if (turf === "home") {
+    setScroes((prev) => ({
+      ...prev,
+      homePrediction:
+        prev.homePrediction > 0 ? prev.homePrediction - 1 : 0,
+    }));
+  } else {
+    setScroes((prev) => ({
+      ...prev,
+      awayPrediction:
+        prev.awayPrediction > 0 ? prev.awayPrediction - 1 : 0,
+    }));
+  }
+};
+
 
   const savePrediction = async () => {
     const isValid =
