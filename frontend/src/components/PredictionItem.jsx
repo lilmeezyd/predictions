@@ -29,6 +29,7 @@ const PredictionItem = (props) => {
     });
   }, [data]);
   const addToScores = (turf) => {
+    console.log('ADD')
     if (turf === "home") {
       if (homePrediction === undefined) {
         setScroes((prev) => ({
@@ -56,6 +57,7 @@ const PredictionItem = (props) => {
     }
   };
   const subtractFromScores = (turf) => {
+    console.log('SUBTRACT')
     if (turf === "home") {
       if (homePrediction > 0) {
         setScroes((prev) => ({
