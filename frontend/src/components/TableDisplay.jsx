@@ -68,7 +68,7 @@ const TableDisplay = ({ data, userInfo }) => {
                 ? entry.oldRank - entry.rank
                 : (entry.oldRank > entry.rank)
                 ? `+${entry.oldRank - entry.rank}`
-                : "=") : ""}
+                : "=") : "="}
             </div>
           </div>
           <div>{entry.rank}</div>
