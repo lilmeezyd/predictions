@@ -57,11 +57,11 @@ const TableDisplay = ({ data, userInfo }) => {
             </div>
             <div
               className={`ml-1 font-bold text-xs ${
-                entry.oldRank < entry.rank
+                entry.oldRank > 0 ? (entry.oldRank < entry.rank
                   ? "text-red-500"
                   : entry.oldRank > entry.rank
                   ? `text-green-500`
-                  : "text-gray-500"
+                  : "text-gray-500") : "text-gray-500"
               }`}
             >
               {entry.oldRank > 0 ? (entry.oldRank < entry.rank
