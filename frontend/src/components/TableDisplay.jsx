@@ -22,7 +22,7 @@ const TableDisplay = ({ data, userInfo }) => {
   return (
     <>
     <div
-      className="border border-gray-400 m-auto"
+      className="border border-gray-100 rounded-lg m-auto fixture-housing"
       style={{ maxWidth: "700px" }}
     >
       <div className="standing-grid-1 text-sm standing-grid-header">
@@ -66,13 +66,13 @@ const TableDisplay = ({ data, userInfo }) => {
             >
               {entry.oldRank > 0 ? (entry.oldRank < entry.rank
                 ? entry.oldRank - entry.rank
-                : entry.oldRank > entry.rank
-                ? +(entry.oldRank - entry.rank)
-                : "") : ""}
+                : (entry.oldRank > entry.rank)
+                ? `+${entry.oldRank - entry.rank}`
+                : "=") : ""}
             </div>
           </div>
           <div>{entry.rank}</div>
-          <div>
+          <div className="truncate">
             <Link
               to={`${
                 userInfo.roles.ADMIN
