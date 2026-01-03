@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import highestEntrant from "../hooks/formattedHighestEntrant";
 import predictFormat from "../hooks/predictFormat";
 
-const PredictionsHome = () => { 
+const AdminHome = () => {
   const { userInfo } = useSelector((state) => state.auth);
   const { data = [], isLoading } = useGetHighestScoringEntrantQuery();
   const { data: matchdayIdObj = {} } = useGetCurrentMatchdayQuery();
@@ -173,6 +173,6 @@ const PredictionsHome = () => {
       </div>
     </div>
   );
-}
+};
 
-export default PredictionsHome
+export default AdminHome;

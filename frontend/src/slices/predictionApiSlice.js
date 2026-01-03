@@ -11,6 +11,18 @@ export const predictionApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ['Prediction']
     }),
+    predictionMadeTheMost: builder.query({
+      query: () => ({
+        url: `${PREDICTIONS_URL}/most-prediction`
+      }),
+      providesTags: ['Prediction']
+    }),
+    predictionMadeTheLeast: builder.query({
+      query: () => ({
+        url: `${PREDICTIONS_URL}/least-predicted`
+      }),
+      providesTags: ["Prediction"]
+    }),
     getPredictionsByPlayer: builder.query({
       query: ({id, mid}) => ({
         url: `${PREDICTIONS_URL}/${id}/matchday/${mid}`
@@ -29,5 +41,7 @@ export const predictionApiSlice = apiSlice.injectEndpoints({
 export const {
   useGetPredictionsByPlayerQuery,
   useMakePredictionsMutation,
-  useGetMyPredictionsQuery
+  useGetMyPredictionsQuery,
+  usePredictionMadeTheMostQuery,
+  usePredictionMadeTheLeastQuery
 } = predictionApiSlice;

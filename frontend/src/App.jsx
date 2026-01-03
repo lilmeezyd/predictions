@@ -13,6 +13,7 @@ import NormalFixtures from "./components/NormalFixtures";
 import NormalTables from "./components/NormalTables";
 import PredictionSection from "./components/PredictionSection";
 import PredictionsHome from "./components/PredictionsHome";
+import AdminHome from "./components/AdminHome";
 import PlayerPredictions from "./components/PlayerPredictions";
 import PrivateRoute from "./components/PrivateRoute";
 import AdminRoute from "./components/AdminRoute";
@@ -21,7 +22,7 @@ import { useGetMeQuery } from "./slices/userApiSlice";
 import { useSelector } from "react-redux";
 
 function App() {
-  const { userInfo } = useSelector((state) => state.auth);
+  const { userInfo } = useSelector((state) => state.auth); 
   const { data, isLoading } = useGetMeQuery(undefined, {
     skip: !userInfo,
   });
@@ -42,6 +43,7 @@ function App() {
         </Route>
         <Route path="" element={<AdminRoute />}>
           <Route path="admin" element={<AdminScreen />}>
+            <Route path="" element={<AdminHome />} />
             <Route path="teams" element={<Teams />} />
             <Route path="fixtures" element={<Fixtures />} />
             <Route path="players" element={<Players />} />

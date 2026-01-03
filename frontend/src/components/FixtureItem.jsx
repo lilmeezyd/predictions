@@ -13,7 +13,7 @@ const FixtureItem = (props) => {
       : newTime.replace(newTime.substring(4, 9), newTime.substring(7, 9));
   return (
     <div className="p-2">
-      <div className="fixture-housing rounded-lg relative">
+      <div className="border border-gray-100 fixture-housing rounded-lg relative">
         <div className="time-position text-xs font-bold">{time}</div>
         <div className="date-position text-xs font-bold">
           {new Date(fixture.kickOffTime).toLocaleDateString()}

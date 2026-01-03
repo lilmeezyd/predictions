@@ -20,6 +20,12 @@ export const tableApiSlice = apiSlice.injectEndpoints({
                 url: `${TABLES_URL}/matchdays/${id}`
             }),
             providesTags: ['Table']
+        }),
+        getHighestScoringEntrant: builder.query({
+            query: () => ({
+                url: `${TABLES_URL}/weekly-highest`
+            }),
+            providesTags: ['Table']
         })
     })
 })
@@ -27,5 +33,6 @@ export const tableApiSlice = apiSlice.injectEndpoints({
 export const {
     useGetOverallTableQuery,
     useGetWeeklyTablesQuery,
-    useGetSingleWeeklyTableQuery
+    useGetSingleWeeklyTableQuery,
+    useGetHighestScoringEntrantQuery
 } = tableApiSlice

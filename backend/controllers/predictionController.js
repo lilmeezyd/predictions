@@ -131,3 +131,165 @@ export const getMyPredictions = asyncHandler(async (req, res) => {
 
   res.status(200).json(prediction);
 });
+
+export const predictionMadeTheMost = asyncHandler(async (req, res) => {
+  const matchday = await Matchday.findOne({ current: true });
+  const matchdayId = matchday ? matchday?._id : 1;
+  const result = await Prediction.aggregate([
+    { $match: { matchday: matchdayId } },
+    {
+      $group: {
+        _id: {
+          fixture: "$fixture",
+          home: "$homePrediction",
+          away: "$awayPrediction",
+        },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $setWindowFields: {
+        output: {
+          totalPredictions: {
+            $sum: "$count",
+            window: {},
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        percentage: {
+          $round: [
+            {
+              $multiply: [{ $divide: ["$count", "$totalPredictions"] }, 100],
+            },
+            2,
+          ],
+        },
+      },
+    },
+    {
+      $sort: { count: -1 },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $lookup: {
+        from: "fixtures", // Mongo collection name
+        localField: "_id.fixture",
+        foreignField: "_id",
+        as: "fixture",
+      },
+    },
+    {
+      $unwind: "$fixture",
+    },
+    {
+      $addFields: {
+        score: {
+          $concat: [
+            { $toString: "$_id.home" },
+            "-",
+            { $toString: "$_id.away" },
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        fixture: 1,
+        score: 1,
+        count: 1,
+        totalPredictions: 1,
+        percentage: 1,
+      },
+    },
+  ]);
+  console.log(result.length);
+  res.json(result);
+});
+
+export const predictionMadeTheLeast = asyncHandler(async (req, res) => {
+  const matchday = await Matchday.findOne({ current: true });
+  const matchdayId = matchday ? matchday?._id : 1;
+  const result = await Prediction.aggregate([
+    { $match: { matchday: matchdayId } },
+    {
+      $group: {
+        _id: {
+          fixture: "$fixture",
+          home: "$homePrediction",
+          away: "$awayPrediction",
+        },
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $setWindowFields: {
+        output: {
+          totalPredictions: {
+            $sum: "$count",
+            window: {},
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        percentage: {
+          $round: [
+            {
+              $multiply: [{ $divide: ["$count", "$totalPredictions"] }, 100],
+            },
+            2,
+          ],
+        },
+      },
+    },
+    {
+      $sort: { count: 1 },
+    },
+    {
+      $limit: 1,
+    },
+    {
+      $lookup: {
+        from: "fixtures", // Mongo collection name
+        localField: "_id.fixture",
+        foreignField: "_id",
+        as: "fixture",
+      },
+    },
+    {
+      $unwind: "$fixture",
+    },
+    {
+      $addFields: {
+        score: {
+          $concat: [
+            { $toString: "$_id.home" },
+            "-",
+            { $toString: "$_id.away" },
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        fixture: 1,
+        score: 1,
+        count: 1,
+        totalPredictions: 1,
+        percentage: 1,
+      },
+    },
+  ]);
+  console.log(result.length);
+  res.json(result);
+});
+
+export const predictionPercentages = asyncHandler(async (req, res) => {});
