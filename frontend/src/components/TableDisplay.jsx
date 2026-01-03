@@ -61,7 +61,7 @@ const TableDisplay = ({ data, userInfo }) => {
                   ? "text-red-500"
                   : entry.oldRank > entry.rank
                   ? `text-green-500`
-                  : ""
+                  : "text-gray-500"
               }`}
             >
               {entry.oldRank > 0 ? (entry.oldRank < entry.rank
