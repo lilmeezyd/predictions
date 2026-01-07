@@ -49,7 +49,7 @@ const TableDisplay = ({ data, userInfo }) => {
             key={entry.playerId}
           >
             <div className="font-bold w-full flex items-center justify-center">
-              <div className="border">
+              <div>
                 {entry.oldRank > entry.rank && entry.oldRank > 0 && (
                   <ArrowUpCircle className="text-green-500" size={16} />
                 )}
