@@ -6,6 +6,8 @@ import {
 import { useSelector } from "react-redux";
 import { CircleCheck, LoaderCircle, CircleX } from "lucide-react";
 import { toast } from "sonner";
+import { useGetPredictionPercentagesQuery } from "../slices/predictionApiSlice";
+import formatPredictionDetails from "../hooks/formatPredictionDetails"
 
 const PredictionItem = (props) => {
   const { fixture } = props;
@@ -16,11 +18,15 @@ const PredictionItem = (props) => {
     mid: fixture?.matchdayId,
     fid: fixture?._id,
   });
+  const { data: fixtureDetails = [] } = useGetPredictionPercentagesQuery(
+      fixture?._id
+    );
   const [scores, setScroes] = useState({
     homePrediction: undefined,
     awayPrediction: undefined,
   });
   const { awayPrediction, homePrediction } = scores;
+  const newDetails = formatPredictionDetails(fixtureDetails)
 
   useEffect(() => {
     setScroes({
@@ -108,7 +114,7 @@ const PredictionItem = (props) => {
     newTime.length === 11
       ? newTime.replace(newTime.substring(5, 10), newTime.substring(8, 10))
       : newTime.replace(newTime.substring(4, 9), newTime.substring(7, 9));
-
+ 
   return (
     <div className="p-2">
       <div className="fixture-housing relative">
@@ -194,6 +200,27 @@ const PredictionItem = (props) => {
           >
             {isLoading ? <LoaderCircle size={24} /> : "Save"}
           </button>}
+        </div>
+        <div>
+          <h4 className="text-center font-semibold text-xs sm:text-sm py-1">Predictions Made</h4>
+          <div className="font-bold text-xs sm:text-sm flex items-center justify-center w-[50%] m-auto">
+          <div className="w-1/3 text-center">
+            Home
+          </div>
+          <div className="w-1/3 text-center">
+            Draw
+          </div>
+          <div className="w-1/3 text-center">
+            Away
+          </div>
+        </div>
+        <div className={`text-xs sm:text-sm border rounded-lg flex items-center justify-center w-[50%] m-auto font-semibold`}>
+        {newDetails.map((entry, i) => (
+          <div style={{background: entry.color}} className={`text-xs py-1 w-1/3 text-center`} key={entry.outcome} id={entry.outcome}>
+            {`${entry.percentage}%`}
+          </div>
+        ))}
+        </div>
         </div>
         <div className="pt-1 flex justify-between items-center">
           <div className="text-center text-sm font-semibold w-1/3 p-1">

@@ -9,6 +9,7 @@ import { useGetSingleUserQuery } from "../slices/userApiSlice";
 import {
   formattedPlayerPredictions,
   formattedPlayerName,
+  totalPoints
 } from "../hooks/formattedPlayerPredictions";
 import PlayerPredictionsItem from "../components/PlayerPredictionsItem";
 import { Button } from "../../@/components/ui/button";
@@ -33,6 +34,7 @@ const PlayerPredictions = () => {
 
   const playerPredictions = formattedPlayerPredictions(predictions);
   const playerName = formattedPlayerName(singleUser);
+  const totalPredictionPoints = totalPoints(predictions)
   const possessiveName = playerName?.endsWith("s")
     ? `${playerName}'`
     : `${playerName}'s`;
@@ -60,9 +62,17 @@ const PlayerPredictions = () => {
       {playerPredictions.length === 0 ? (
         <div className="text-center font-semibold">No data available</div>
       ) : (
-        playerPredictions.map((prediction) => (
+        <div>
+          <div className="py-2 flex flex-col items-center points-border text-2xl bg-gray-900 text-white">
+            <div className="font-bold">Points</div>
+            <div className="font-semibold">{totalPredictionPoints}</div>
+          </div>
+          <>
+        {playerPredictions.map((prediction) => (
           <PlayerPredictionsItem key={prediction._id} prediction={prediction} />
-        ))
+        ))}
+        </>
+        </div>
       )}
 
       {max > 1 && (

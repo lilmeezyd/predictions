@@ -67,7 +67,7 @@ const PredictionsHome = () => {
             <>
               {mostPredictionFormatted?.length > 0 ? (
                 mostPredictionFormatted.map((fixture) => (
-                  <div>
+                  <div key={fixture._id}>
                     <div
                       className={`grid grid-cols-[35%_30%_35%]
                                         items-center p-4`}

@@ -6,11 +6,17 @@ import {
 import { useSelector } from "react-redux";
 import { CircleCheck, LoaderCircle, CircleX } from "lucide-react";
 import { toast } from "sonner";
+import { useGetPredictionPercentagesQuery } from "../slices/predictionApiSlice";
+import formatPredictionDetails from "../hooks/formatPredictionDetails";
 
 const PlayerPredictionsItem = (props) => {
   const { prediction } = props;
   const { userInfo } = useSelector((state) => state.auth);
 
+  const { data: fixtureDetails = [] } = useGetPredictionPercentagesQuery(
+    prediction?.fixtureId
+  );
+  const newDetails = formatPredictionDetails(fixtureDetails);
   const newDate = new Date(prediction.kickOffTime);
   const newTime = newDate.toLocaleTimeString();
   const time =
@@ -47,7 +53,11 @@ const PlayerPredictionsItem = (props) => {
                      font-bold text-xs sm:text-base rounded-lg flex p-2 relative`}
           >
             <div className="text-center my-auto mr-1 border border-gray-400 flex-grow rounded-lg">
-              <div className="bg-gray-900 text-white">{prediction.homePrediction === undefined ? "?" : prediction.homePrediction}</div>
+              <div className="bg-gray-900 text-white">
+                {prediction.homePrediction === undefined
+                  ? "?"
+                  : prediction.homePrediction}
+              </div>
             </div>
             {prediction?.homePrediction !== undefined &&
               prediction?.awayPrediction !== undefined && (
@@ -55,8 +65,12 @@ const PlayerPredictionsItem = (props) => {
                   <CircleCheck color="green" size={24} />
                 </div>
               )}
-              <div className="text-center ml-1 border border-gray-400 flex-grow rounded-lg">
-              <div className="bg-gray-900 text-white">{prediction?.awayPrediction === undefined ? "?" : prediction?.awayPrediction}</div>
+            <div className="text-center ml-1 border border-gray-400 flex-grow rounded-lg">
+              <div className="bg-gray-900 text-white">
+                {prediction?.awayPrediction === undefined
+                  ? "?"
+                  : prediction?.awayPrediction}
+              </div>
             </div>
           </div>
           <div className="text-xs sm:text-base py-2 px-1 sm:px-4 font-semibold flex flex-col sm:flex-row justify-between">
@@ -70,6 +84,30 @@ const PlayerPredictionsItem = (props) => {
             <div className="my-auto truncate text-center sm:text-left w-full sm:w-3/4 px-2">
               {prediction.teamAwayName}
             </div>
+          </div>
+        </div>
+        <div>
+          <h4 className="text-center font-semibold text-xs sm:text-sm py-1">
+            Predictions Made
+          </h4>
+          <div className="font-bold text-xs sm:text-sm flex items-center justify-center w-[50%] m-auto">
+            <div className="w-1/3 text-center">Home</div>
+            <div className="w-1/3 text-center">Draw</div>
+            <div className="w-1/3 text-center">Away</div>
+          </div>
+          <div
+            className={`text-xs sm:text-sm border rounded-lg flex items-center justify-center w-[50%] m-auto font-semibold`}
+          >
+            {newDetails.map((entry, i) => (
+              <div
+                style={{ background: entry.color }}
+                className={`text-xs py-1 w-1/3 text-center`}
+                key={entry.outcome}
+                id={entry.outcome}
+              >
+                {`${entry.percentage}%`}
+              </div>
+            ))}
           </div>
         </div>
         <div className="pt-1 flex justify-between items-center">

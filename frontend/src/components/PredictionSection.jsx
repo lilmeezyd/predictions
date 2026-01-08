@@ -1,12 +1,19 @@
 import { useMemo, useState, useEffect } from "react";
 import { useGetFixturesQuery } from "../slices/fixtureApiSlice";
 import { useGetTeamsQuery } from "../slices/teamApiSlice";
-import { useGetMatchdaysQuery, useGetCurrentMatchdayQuery } from "../slices/matchdayApiSlice";
+import {
+  useGetMatchdaysQuery,
+  useGetCurrentMatchdayQuery,
+} from "../slices/matchdayApiSlice";
 import fixturesByMatchday from "../hooks/fixturesByMatchday";
 import PredictionItem from "./PredictionItem";
 import { Button } from "../../@/components/ui/button";
+import { useSelector } from "react-redux";
+import { createTotalForLoggedInUser } from "../hooks/createTotalForLoggedInUser";
 
 const PredictionSection = () => {
+  const { userInfo } = useSelector((state) => state.auth);
+  const { _id } = userInfo;
   const { data = [], isLoading } = useGetFixturesQuery();
   const { data: teams = [] } = useGetTeamsQuery();
   const { data: matchdays = [] } = useGetMatchdaysQuery();
@@ -14,6 +21,7 @@ const PredictionSection = () => {
   const itemsPerPage = 1;
   const [currentPage, setCurrentPage] = useState(1);
   const fixtures = fixturesByMatchday(data);
+  const totalPoints = createTotalForLoggedInUser(_id, currentPage);
   const groupedFixtures = useMemo(() => {
     const sortable = [...fixtures];
     const filtered = sortable.find((x) => x.matchday === currentPage) || {};
@@ -28,12 +36,12 @@ const PredictionSection = () => {
     return returnedFixtures;
   }, [fixtures, currentPage]);
   const totalPages = Math.ceil(fixtures?.length / itemsPerPage);
-  const min = Math.min(...fixtures.map(x => x.matchday))
-  const max = Math.max(...fixtures.map(x => x.matchday))
+  const min = Math.min(...fixtures.map((x) => x.matchday));
+  const max = Math.max(...fixtures.map((x) => x.matchday));
 
   useEffect(() => {
     setCurrentPage(matchdayIdObj?.matchday);
-  }, [matchdayIdObj])
+  }, [matchdayIdObj]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -47,9 +55,17 @@ const PredictionSection = () => {
               <h1 className="text-center font-bold my-2 py-2 bg-gray-900 rounded-sm text-white">
                 Matchday&nbsp;{currentPage}
               </h1>
-              {groupedFixtures.map((fixture) => (
-                <PredictionItem key={fixture._id} fixture={fixture} />
-              ))}
+              <div>
+                <div className="py-2 flex flex-col items-center points-border text-2xl bg-gray-900 text-white">
+                  <div className="font-bold">Points</div>
+                  <div className="font-semibold">{totalPoints}</div>
+                </div>
+                <>
+                  {groupedFixtures.map((fixture) => (
+                    <PredictionItem key={fixture._id} fixture={fixture} />
+                  ))}
+                </>
+              </div>
             </div>
           </div>
 
@@ -63,13 +79,9 @@ const PredictionSection = () => {
               >
                 Prev
               </Button>
-              <div className="text-sm">
-                Matchday {currentPage}
-              </div>
+              <div className="text-sm">Matchday {currentPage}</div>
               <Button
-                onClick={() =>
-                  setCurrentPage((p) => p + 1)
-                }
+                onClick={() => setCurrentPage((p) => p + 1)}
                 disabled={currentPage >= max}
                 variant="outline"
                 size="sm"

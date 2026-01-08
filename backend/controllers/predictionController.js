@@ -98,7 +98,7 @@ export const getPredictionsByPlayer = asyncHandler(async (req, res) => {
   })
     .populate("player", "firstName lastName")
     .populate("matchday", "matchdayId")
-    .populate("fixture", "finished live kickOffTime")
+    .populate("fixture", "finished live kickOffTime _id")
     .populate("teamAway", "name shortName")
     .populate("teamHome", "name shortName");
 
@@ -288,8 +288,81 @@ export const predictionMadeTheLeast = asyncHandler(async (req, res) => {
       },
     },
   ]);
-  console.log(result.length);
   res.json(result);
 });
 
-export const predictionPercentages = asyncHandler(async (req, res) => {});
+export const predictionPercentages = asyncHandler(async (req, res) => {
+  //const fixturePredictions = await Prediction.find({fixture: req.params.id})
+  const fixture = await Fixture.findById(req.params.id);
+  if (!fixture) {
+    throw new Error("Fixture not found!");
+  }
+  const { _id } = fixture;
+  const fixturePredictions = await Prediction.aggregate([
+    { $match: { fixture: _id } },
+    {
+      $addFields: {
+        outcome: {
+          $switch: {
+            branches: [
+              {
+                case: { $gt: ["$homePrediction", "$awayPrediction"] },
+                then: "homeWin",
+                then: 1,
+              },
+              {
+                case: { $lt: ["$homePrediction", "$awayPrediction"] },
+                then: "awayWin",
+                then: 3,
+              },
+              {
+                case: { $eq: ["$homePrediction", "$awayPrediction"] },
+                then: "draw",
+                then: 2
+              },
+            ],
+            default: "unknown",
+          },
+        },
+      },
+    },
+    {
+      $group: {
+        _id: "$outcome",
+        count: { $sum: 1 },
+      },
+    },
+    {
+      $setWindowFields: {
+        output: {
+          totalPredictions: {
+            $sum: "$count",
+            window: {},
+          },
+        },
+      },
+    },
+    {
+      $addFields: {
+        percentage: {
+          $round: [
+            {
+              $multiply: [{ $divide: ["$count", "$totalPredictions"] }, 100],
+            },
+            2,
+          ],
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        outcome: "$_id",
+        count: 1,
+        totalPredictions: 1,
+        percentage: 1,
+      },
+    },
+  ]);
+  res.json(fixturePredictions);
+});

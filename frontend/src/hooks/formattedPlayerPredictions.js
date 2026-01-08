@@ -10,6 +10,7 @@ function formattedPlayerPredictions(predictions) {
         live: x?.fixture?.live,
         finished: x?.fixture?.finished,
         kickOffTime: x?.fixture?.kickOffTime,
+        fixtureId: x?.fixture?._id,
         homePrediction: x?.homePrediction,
         matchdayId: x?.matchday?.matchdayId,
         player: x?.player,
@@ -37,5 +38,9 @@ function formattedPlayerName(singleUser) {
   return `${firstName ?? ""} ${lastName ?? ""}`.trim();
 }
 
+function totalPoints(predictions) {
+return predictions.reduce((x,y) => x+y.predictionPoints, 0)
+}
 
-export { formattedPlayerPredictions, formattedPlayerName }
+
+export { formattedPlayerPredictions, formattedPlayerName, totalPoints }

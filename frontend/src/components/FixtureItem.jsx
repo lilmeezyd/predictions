@@ -1,9 +1,15 @@
 import { Pencil, Trash2, Plus, CircleCheck, CircleX } from "lucide-react";
 import { useSelector } from "react-redux";
+import { useGetPredictionPercentagesQuery } from "../slices/predictionApiSlice";
+import formatPredictionDetails from "../hooks/formatPredictionDetails"
 
 const FixtureItem = (props) => {
   const { fixture, openEditModal, openDeleteModal } = props;
   const { userInfo } = useSelector((state) => state.auth);
+  const { data: fixtureDetails = [] } = useGetPredictionPercentagesQuery(
+    fixture?._id
+  );
+  const newDetails = formatPredictionDetails(fixtureDetails)
 
   const newDate = new Date(fixture.kickOffTime);
   const newTime = newDate.toLocaleTimeString();
@@ -73,6 +79,27 @@ const FixtureItem = (props) => {
               </button>
             </div>
           )}
+        </div>
+        <div>
+          <h4 className="text-center font-semibold text-xs sm:text-sm py-1">Predictions Made</h4>
+          <div className="font-bold text-xs sm:text-sm flex items-center justify-center w-[50%] m-auto">
+          <div className="w-1/3 text-center">
+            Home
+          </div>
+          <div className="w-1/3 text-center">
+            Draw
+          </div>
+          <div className="w-1/3 text-center">
+            Away
+          </div>
+        </div>
+        <div className={`text-xs sm:text-sm border rounded-lg flex items-center justify-center w-[50%] m-auto font-semibold`}>
+        {newDetails.map((entry, i) => (
+          <div style={{background: entry.color}} className={`text-xs py-1 w-1/3 text-center`} key={entry.outcome} id={entry.outcome}>
+            {`${entry.percentage}%`}
+          </div>
+        ))}
+        </div>
         </div>
         {fixture.live && (
           <p className="text-center text-xs sm:text-base text-red-500 font-semibold p-2">

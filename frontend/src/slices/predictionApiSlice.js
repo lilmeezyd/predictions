@@ -35,6 +35,12 @@ export const predictionApiSlice = apiSlice.injectEndpoints({
       }),
       providesTags: ['Prediction']
     }),
+    getPredictionPercentages: builder.query({
+      query: (id) => ({
+        url: `${PREDICTIONS_URL}/fixture/${id}`
+      }),
+      providesTags: ['Prediction']
+    })
   }),
 })
 
@@ -43,5 +49,6 @@ export const {
   useMakePredictionsMutation,
   useGetMyPredictionsQuery,
   usePredictionMadeTheMostQuery,
-  usePredictionMadeTheLeastQuery
+  usePredictionMadeTheLeastQuery,
+  useGetPredictionPercentagesQuery
 } = predictionApiSlice;

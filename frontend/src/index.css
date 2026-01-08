@@ -210,3 +210,10 @@ body {
 .center-grid {
   justify-self: center;
 }
+
+.points-border {
+  width: 100px;
+  margin: auto;
+  box-shadow: 0 5px 20px 0px rgba(0, 0, 0, .5);
+  border-radius: 5px;
+}
